@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@600&family=Pacifico&display=swap" rel="stylesheet">
+    <title>Cooking Recipe Keeper</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-transparent">
+        <div class="container">
+          <a class="navbar-brand" href="#">Recipe Club <span class="material-symbols-outlined">skillet</span></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#top">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#section1">New Recipe</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#section2">View Recipes</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>      
+    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="images/1.jpg" class="d-block w-100" alt="...">
+            <div class="centered-text">
+                Pure cocoa bliss for your senses.
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="images/2.jpg" class="d-block w-100" alt="...">
+            <div class="centered-text">
+                A sandwich sensation!
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="images/3.jpg" class="d-block w-100" alt="...">
+            <div class="centered-text">
+                A slice of happiness in every bite.
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+    <div id="section1" class="section">
+        <div class="sub-header">
+            <h2>Add Recipe</h2>
+        </div>
+        <div class="container" id="container">
+            <form id="recipe-form" action="">
+                <label>Recipe Name:</label>
+                <input type="text" class="form-control" id="recipe-name" placeholder="Enter your recipe name">
+                <label>Ingredients:</label>
+                <textarea class="form-control" id="ingredients" placeholder="List ingredients separated by commas"></textarea>
+                <label>Instruction:</label>
+                <textarea class="form-control" id="instruction" placeholder="Steps for preparation"></textarea>
+                <label>Image URL:</label>
+                <input type="URL" class="form-control" id="display-area" placeholder="URL of the recipe image"></input>
+                <button type="submit" class="btn btn-outline-success">Submit</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="section2" class="section">
+        <h2 class="header">Your Recipes</h2>
+        <div class="recipe-container" id="recipe-container">
+            <!-- Placeholder of recipe cards -->
+        </div>
+    </div>
+    <script src="js/recipe.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>

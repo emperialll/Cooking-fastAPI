@@ -1,0 +1,151 @@
+.section {
+padding: 50px;
+/* Add any other styles for your sections here */
+}
+
+/* Smooth scrolling effect */
+html {
+scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Make the body fill the viewport height */
+    background-color: #000;
+
+}
+
+label{
+    margin-top: 15px;
+    font-size: 15px;
+    color: aliceblue;
+}
+
+.card-img-top {
+    height: 286px;
+    width: 100%;
+    object-fit: contain;
+}
+
+.form-control::placeholder {
+    font-size: 13px;
+    color: #bbbdbf;
+}
+
+button{
+    width: 100%;
+    margin-top: 20px;
+}
+
+.carousel-item{
+    height: 800px;
+    width: 100%;
+    object-fit: contain;
+}
+
+.header{
+    width: 90%;
+    height: min-content;
+    margin: auto;
+    padding-top: 30px;
+    padding-bottom: 10px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: aliceblue;
+}
+
+.sub-header{
+    width: 90%;
+    height: min-content;
+    margin: 20px auto auto auto;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: aliceblue;
+}
+
+#container{
+    width: 33%;
+    margin-top: 20px;
+    padding: 25px;
+    border: solid;
+    border-radius: 15px;
+    border-color: aliceblue;
+}
+
+.recipe-container{
+    margin: auto;
+    padding: 100px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.card{
+    margin: 5px;
+}
+
+.image-container {
+    position: relative;
+    text-align: center;
+  }
+  
+.centered-text {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+/* color: #fc9803; */
+color: #ffc430;
+font-size: 100px;
+font-weight: 900;
+line-height: 1;
+padding: 10px 20px;
+border-radius: 5px;
+text-align: center;
+}
+
+.navbar {
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    transition: background-color 0.3s;
+  }
+  
+.navbar a.navbar-brand {
+    color: #ffc430;
+    font-size: 32px;
+    font-weight: bold;
+    font-family: 'Pacifico', cursive;
+}
+
+.navbar-nav .nav-link {
+color: #ffc430;
+}
+
+.navbar-nav .nav-link:hover {
+color: white;
+}
+
+.nav-link{
+    color: #ffc430;
+}
+
+.navbar-nav {
+    margin-left: auto;
+  }
+  
+.navbar-nav .nav-item {
+margin-right: 15px;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
