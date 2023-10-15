@@ -6,16 +6,30 @@ let displayArea = document.getElementById('display-area');
 let recipeContainer = document.getElementById('recipe-container');
 let recipes = [];
 
+const recipesData = 'http://127.0.0.1:8000/recipes/'
+const getRecipesData = async () => {
+    try {
+        const fetchedData = await fetch(recipesData);
+        if (!fetchedData.ok) {
+            throw new Error("HTTP error " + fetchedData.status);
+        }
+        const response = await fetchedData.json();
+        return response;
+    } catch (error) {
+        console.error('Error: ', error.message);
+    }
+};
+
 // Load recipes from localStorage on page load
 window.addEventListener('load', function() {
-    const storedRecipes = localStorage.getItem('recipes');
-    if (storedRecipes) {
-        recipes = JSON.parse(storedRecipes);
-        recipes.forEach(function(recipe) {
+    getRecipesData().then(data => {
+        data.forEach(recipe => {
             displayRecipe(recipe);
         });
-    }
-});
+        }).catch(err => {
+            console.log('rejected', err);
+        });
+    });
 
 function displayRecipe(recipe) {
     // Create the card div element
@@ -25,9 +39,9 @@ function displayRecipe(recipe) {
 
     // Create the image element (assuming displayArea contains a valid image URL)
     let imgElement = document.createElement('img');
-    imgElement.src = recipe.displayArea; // Assuming displayArea contains the image URL
+    imgElement.src = recipe.image; // Assuming displayArea contains the image URL
     imgElement.className = 'card-img-top';
-    imgElement.alt = `Image displays the ${recipe.recipeName}'s dish`;
+    imgElement.alt = `Image displays the ${recipe.name}'s dish`;
 
     // Create the card body div element
     let cardBodyDiv = document.createElement('div');
@@ -36,7 +50,7 @@ function displayRecipe(recipe) {
     // Create the card title (recipe name) element
     let cardTitle = document.createElement('h5');
     cardTitle.className = 'card-title';
-    cardTitle.textContent = recipe.recipeName;
+    cardTitle.textContent = recipe.name;
 
     // Create the card text (recipe instruction) element
     let cardText = document.createElement('p');
@@ -71,13 +85,13 @@ function displayRecipe(recipe) {
                     <div class="modal-body">
                         <form id="modal-recipe-form" action="">
                             <label style="color: black;">Recipe Name:</label>
-                            <input type="text" class="form-control" id="modal-recipe-name" placeholder="${recipe.recipeName}">
+                            <input type="text" class="form-control" id="modal-recipe-name" placeholder="${recipe.name}">
                             <label style="color: black;">Ingredients:</label>
                             <textarea class="form-control" id="modal-ingredients" placeholder="${recipe.ingredients}"></textarea>
                             <label style="color: black;">Instruction:</label>
                             <textarea class="form-control" id="modal-instruction" placeholder="${recipe.instruction}"></textarea>
                             <label style="color: black;">Image URL:</label>
-                            <input type="URL" class="form-control" id="modal-display-area" placeholder="${recipe.displayArea}"></input>
+                            <input type="URL" class="form-control" id="modal-display-area" placeholder="${recipe.image}"></input>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -158,55 +172,43 @@ function displayRecipe(recipe) {
     recipeContainer.appendChild(cardDiv);
 };
 
-recipeForm.addEventListener('submit', function(event) {
-    event.preventDefault();
+recipeForm.addEventListener('submit', async (event) => {
+    event.preventDefault(); // Prevent the form from submitting normally
 
-    let enteredRecipeName = recipeName.value;
-    let enteredIngredients = ingredients.value;
-    let enteredInstruction = instruction.value;
-    let enteredDisplayArea = displayArea.value;
+    // Get form input values
+    const recipeName = document.getElementById('recipe-name').value;
+    const ingredients = document.getElementById('ingredients').value.split(',').map(item => item.trim());
+    const instruction = document.getElementById('instruction').value;
+    const image = document.getElementById('display-area').value;
 
-    let newRecipe = {
-        recipeName: enteredRecipeName,
-        ingredients: enteredIngredients,
-        instruction: enteredInstruction,
-        displayArea: enteredDisplayArea
+    // Create a new recipe object
+    const newRecipe = {
+        name: recipeName,
+        ingredients: ingredients,
+        instruction: instruction,
+        image: image
     };
-    recipes.push(newRecipe);
 
-    // Save recipes to localStorage
-    localStorage.setItem('recipes', JSON.stringify(recipes));
+    // Send a POST request to add the new recipe
+    try {
+        const response = await fetch(recipesData, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newRecipe)
+        });
 
-    recipeName.value = "";
-    ingredients.value = "";
-    instruction.value = "";
-    displayArea.value = "";
-
-    displayRecipe(newRecipe);
+        if (response.ok) {
+            alert('Recipe added successfully!');
+            // Clear the form
+            recipeForm.reset();
+        } else {
+            alert('Failed to add the recipe.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
 });
-
-function deleteRecipe(index) {
-    // Remove the recipe from the array
-    recipes.splice(index, 1);
-
-    // Update localStorage
-    localStorage.setItem('recipes', JSON.stringify(recipes));
-
-    // Clear the recipe container
-    recipeContainer.innerHTML = "";
-
-    // Display all recipes again after deletion
-    recipes.forEach(function(recipe) {
-        displayRecipe(recipe);
-    });
-};
-
-function editRecipe(index) {  
-};
-
-
-
-
-
 
 
