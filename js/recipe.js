@@ -6,7 +6,10 @@ let displayArea = document.getElementById('display-area');
 let recipeContainer = document.getElementById('recipe-container');
 let recipes = [];
 
+// GET API URL
 const recipesData = 'http://127.0.0.1:8000/recipes/'
+
+// Function to fetch all recipes from API
 const getRecipesData = async () => {
     try {
         const fetchedData = await fetch(recipesData);
@@ -20,14 +23,14 @@ const getRecipesData = async () => {
     }
 };
 
-// Load recipes from localStorage on page load
+// Load recipes from API on recipe page
 window.addEventListener('load', function() {
     getRecipesData().then(data => {
         data.forEach(recipe => {
             displayRecipe(recipe);
         });
         }).catch(err => {
-            console.log('rejected', err);
+            alert('rejected', err);
         });
     });
 
@@ -62,8 +65,25 @@ function displayRecipe(recipe) {
     deleteButton.classList.add('btn');
     deleteButton.classList.add('btn-outline-danger');
     deleteButton.innerText = 'Remove';
-    deleteButton.addEventListener('click', function() {
-        deleteRecipe(recipes.indexOf(recipe)); // Pass the index of the recipe to delete
+
+    // DELETE recipe functionality
+    deleteButton.addEventListener('click', async function() {
+        const deleteRecipeURL = `${recipesData}${recipe.id}`;
+
+        await fetch(deleteRecipeURL, {
+            method: 'DELETE',
+        })
+            .then((response) => {
+                if (response.ok) {
+                    alert('Recipe deleted successfully!');
+                } else {
+                    alert('Failed to delete the recipe.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error.message);
+                alert('Failed to delete the recipe.');
+            });
     });
 
     // Create edit button element
@@ -73,6 +93,8 @@ function displayRecipe(recipe) {
     editButton.setAttribute('data-toggle', 'modal');
     editButton.setAttribute('data-target', '#exampleModalCenter');
     editButton.innerText = 'Edit';
+
+    // UPDATE recipe functionality
     editButton.onclick = function(){
         let modalHtml = `
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -105,42 +127,51 @@ function displayRecipe(recipe) {
         // Append the modal HTML to the document body
         document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-        document.getElementById('modal-save-button').addEventListener('click', function () {
+        document.getElementById('modal-save-button').addEventListener('click', async function () {
             // Get the edited values from the modal's input fields
             let editedRecipeName = document.getElementById('modal-recipe-name').value;
             let editedIngredients = document.getElementById('modal-ingredients').value;
             let editedInstruction = document.getElementById('modal-instruction').value;
-            let editedDisplayArea = document.getElementById('modal-display-area').value;
+            let editedImageUrl = document.getElementById('modal-display-area').value;
 
             // Use the initial data as a fallback if the fields are empty
-            editedRecipeName = editedRecipeName.trim() || recipe.recipeName;
-            editedIngredients = editedIngredients.trim() || recipe.ingredients;
+            editedRecipeName = editedRecipeName.trim() || recipe.name;
+            editedIngredients = editedIngredients
+                ? editedIngredients.split(',').map(item => item.trim())
+                : recipe.ingredients; // Preserve default if empty
             editedInstruction = editedInstruction.trim() || recipe.instruction;
-            editedDisplayArea = editedDisplayArea.trim() || recipe.displayArea;
-        
+            editedImageUrl = editedImageUrl.trim() || recipe.image;
+
             // Update the recipe in the recipes array
-            recipe.recipeName = editedRecipeName;
-            recipe.ingredients = editedIngredients;
-            recipe.instruction = editedInstruction;
-            recipe.displayArea = editedDisplayArea;
+            const updatedRecipe = {
+                id: recipe.id,
+                name: editedRecipeName,
+                ingredients: editedIngredients,
+                instruction: editedInstruction,
+                image: editedImageUrl
+            };
         
-            // Save the updated recipes to localStorage
-            localStorage.setItem('recipes', JSON.stringify(recipes));
-        
-            // Close the modal
-            let myModal = new bootstrap.Modal(document.getElementById("exampleModal"));
-            myModal.hide();
-        
-            // Clear the recipe container
-            recipeContainer.innerHTML = "";
-        
-            // Display all recipes again after editing
-            recipes.forEach(function (recipe) {
-                displayRecipe(recipe);
+            const updateRecipeURL = `${recipesData}${recipe.id}`;
+
+            await fetch(updateRecipeURL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedRecipe)
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        alert('Recipe updated successfully!');
+                    } else {
+                        alert('Failed to update the recipe.1');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error.message);
+                    alert('Failed to update the recipe.');
+                });
             });
-            let elementToRemove = document.getElementById('exampleModal');
-            document.body.removeChild(elementToRemove);
-        });
         
         document.getElementById('modal-close-button').addEventListener('click', function () {
             let elementToRemove = document.getElementById('exampleModal');
@@ -156,9 +187,6 @@ function displayRecipe(recipe) {
         let myModal = new bootstrap.Modal(document.getElementById("exampleModal"));
         myModal.show();
     };
-    // editButton.addEventListener('click', function() {
-    //     editRecipe(recipes.indexOf(recipe)); // Pass the index of the recipe to edit
-    // });
 
     // Append elements to build the card structure
     cardBodyDiv.appendChild(cardTitle);
@@ -172,6 +200,7 @@ function displayRecipe(recipe) {
     recipeContainer.appendChild(cardDiv);
 };
 
+// ADD new recipe to database
 recipeForm.addEventListener('submit', async (event) => {
     event.preventDefault(); // Prevent the form from submitting normally
 
