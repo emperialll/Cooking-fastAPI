@@ -1,30 +1,40 @@
-"""
-API for Recipe Keeper Application.
-
-This module provides endpoints for CRUD operations on recipes.
-It uses a JSON file for storage, and FastAPI for the web server.
-"""
-
 import os.path
 import json
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import uvicorn
 
 app = FastAPI()
 
 # CORS settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost", "http://localhost:8000"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
 RECIPES_FILE = "recipes.json"
+
+
+class Recipe(BaseModel):
+    """
+    Recipe Model.
+
+    Attributes:
+        id (int): Recipe identifier.
+        name (str): Name of the recipe.
+        ingredients (list[str]): List of ingredients for the recipe.
+        instruction (str): Instructions for preparing the recipe.
+        image (str): URL or path to the image of the recipe.
+    """
+    id: int
+    name: str
+    ingredients: list[str]
+    instruction: str
+    image: str
 
 
 def load_recipes():
@@ -39,7 +49,7 @@ def load_recipes():
     if not os.path.exists(RECIPES_FILE):
         save_recipes([])
 
-    with open(RECIPES_FILE, "r") as file:
+    with open(RECIPES_FILE, "r", encoding="utf-8") as file:
         return json.load(file)
 
 
@@ -50,23 +60,8 @@ def save_recipes(recipes):
     Args:
         recipes (list): List of recipes to save.
     """
-    with open(RECIPES_FILE, "w") as file:
+    with open(RECIPES_FILE, "w", encoding="utf-8") as file:
         json.dump(recipes, file)
-
-
-class Recipe(BaseModel):
-    """Recipe Model.
-
-    Attributes:
-        id (int): Recipe identifier.
-        name (str): Name of the recipe.
-        ingredients (list[str]): List of ingredients for the recipe.
-    """
-    id: int = None
-    name: str
-    ingredients: list[str]
-    instruction: str
-    image: str
 
 
 @app.get("/recipes")
@@ -86,9 +81,8 @@ def create_recipe(recipe: Recipe):
         dict: The created recipe.
     """
     recipes = load_recipes()
-    recipe_id = max((recipe["id"] for recipe in recipes), default=0) + 1
-    recipe.id = recipe_id
-    recipes.append(recipe.model_dump())
+    recipe.id = max((r["id"] for r in recipes), default=0) + 1
+    recipes.append(recipe.dict())
     save_recipes(recipes)
     return recipe
 
@@ -107,8 +101,7 @@ def read_recipe(recipe_id: int):
         dict: The requested recipe.
     """
     recipes = load_recipes()
-    recipe = next(
-        (recipe for recipe in recipes if recipe["id"] == recipe_id), None)
+    recipe = next((r for r in recipes if r["id"] == recipe_id), None)
     if recipe is None:
         raise HTTPException(status_code=404, detail="Recipe not found")
     return recipe
@@ -131,12 +124,10 @@ def update_recipe(recipe_id: int, updated_recipe: Recipe):
     recipes = load_recipes()
     recipe_index = next((index for index, r in enumerate(
         recipes) if r["id"] == recipe_id), None)
-
     if recipe_index is None:
         raise HTTPException(status_code=404, detail="Recipe not found")
-
     updated_recipe.id = recipe_id
-    recipes[recipe_index] = updated_recipe.model_dump()
+    recipes[recipe_index] = updated_recipe.dict()
     save_recipes(recipes)
     return updated_recipe
 
@@ -157,14 +148,13 @@ def delete_recipe(recipe_id: int):
     recipes = load_recipes()
     recipe_index = next((index for index, r in enumerate(
         recipes) if r["id"] == recipe_id), None)
-
     if recipe_index is None:
         raise HTTPException(status_code=404, detail="Recipe not found")
-
     del recipes[recipe_index]
     save_recipes(recipes)
     return {"status": "success", "message": "Recipe deleted successfully"}
 
 
 if __name__ == "__main__":
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
